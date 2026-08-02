@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.2] - 2026-08-01
+
+- Preserve mixed GitHub and image sources when restoring and auditing the generated template draft.
+
 ## [1.0.1] - 2026-08-01
 
 - Declare Promptfoo's port explicitly for Railway platform health checks.

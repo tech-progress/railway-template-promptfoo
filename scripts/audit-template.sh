@@ -15,7 +15,20 @@ failures=0
 for service_name in "Promptfoo" "Promptfoo Gateway"; do
   desired="$(jq -c --arg service "${service_name}" '.graph.resources[] | select(.type == "service" and .name == $service)' <<<"${graph_json}")"
   actual="$(jq -c --arg service "${service_name}" '[.data.template.serializedConfig.services[] | select(.name == $service)][0]' <<<"${template_json}")"
-  [[ "$(jq -r '.source.image' <<<"${actual}")" == "$(jq -r '.source.image' <<<"${desired}")" ]] || failures=$((failures + 1))
+  if [[ "$(jq -r '.source.image // ""' <<<"${desired}")" != "" ]]; then
+    [[ "$(jq -r '.source.image' <<<"${actual}")" == "$(jq -r '.source.image' <<<"${desired}")" ]] || failures=$((failures + 1))
+    [[ "$(jq -r '.source.repo // ""' <<<"${actual}")" == "" ]] || failures=$((failures + 1))
+  else
+    actual_repo="$(jq -r '.source.repo | sub("^https://github.com/"; "") | sub("\\.git$"; "")' <<<"${actual}")"
+    [[ "${actual_repo}" == "$(jq -r '.source.repo' <<<"${desired}")" ]] || failures=$((failures + 1))
+    for source_field in branch rootDirectory; do
+      [[ "$(jq -r --arg f "${source_field}" '.source[$f]' <<<"${actual}")" == "$(jq -r --arg f "${source_field}" '.source[$f]' <<<"${desired}")" ]] || failures=$((failures + 1))
+    done
+    for build_field in builder dockerfilePath; do
+      [[ "$(jq -r --arg f "${build_field}" '.build[$f]' <<<"${actual}")" == "$(jq -r --arg f "${build_field}" '.build[$f]' <<<"${desired}")" ]] || failures=$((failures + 1))
+    done
+    [[ "$(jq -r '.source.image // ""' <<<"${actual}")" == "" ]] || failures=$((failures + 1))
+  fi
   for field in startCommand healthcheckPath healthcheckTimeout; do
     [[ "$(jq -r --arg f "${field}" '.deploy[$f] // ""' <<<"${actual}")" == "$(jq -r --arg f "${field}" '.deploy[$f] // ""' <<<"${desired}")" ]] || failures=$((failures + 1))
   done
@@ -34,4 +47,3 @@ actual_port="$(jq -r '[.data.template.serializedConfig.services[] | select(.name
 [[ "${actual_port}" == "${expected_port}" ]] || failures=$((failures + 1))
 (( failures == 0 )) || { echo "Promptfoo template audit failed with ${failures} mismatch(es)." >&2; exit 1; }
 echo "Template ${template_id} matches Promptfoo images, authentication, defaults, volume, and networking."
-

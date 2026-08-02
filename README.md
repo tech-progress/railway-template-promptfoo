@@ -2,7 +2,7 @@
 
 This template deploys Promptfoo's community self-hosted UI and API behind Caddy Basic Auth. Promptfoo stays private, stores its SQLite database and configuration on a 5 GB volume, and disables telemetry, update checks, remote generation, and hosted sharing by default.
 
-The current template release is `v1.0.1` and pins Promptfoo `0.117.2` plus Caddy `2.10` by immutable multi-architecture digests. Railway builds the small volume-permission wrapper from `tech-progress/railway-template-promptfoo` on `release-v1`; it drops back to Promptfoo's UID before starting the upstream server.
+The current template release is `v1.0.2` and pins Promptfoo `0.117.2` plus Caddy `2.10` by immutable multi-architecture digests. Railway builds the small volume-permission wrapper from `tech-progress/railway-template-promptfoo` on `release-v1`; it drops back to Promptfoo's UID before starting the upstream server.
 
 ## Use on Railway
 
