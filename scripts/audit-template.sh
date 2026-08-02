@@ -36,6 +36,8 @@ for service_name in "Promptfoo" "Promptfoo Gateway"; do
     key="$(jq -r '.key' <<<"${variable}")"; expected="$(jq -r '.value' <<<"${variable}")"
     [[ "$(jq -r --arg key "${key}" '.variables[$key].defaultValue // "__MISSING__"' <<<"${actual}")" == "${expected:-__MISSING__}" ]] || failures=$((failures + 1))
     [[ "$(jq -r --arg key "${key}" '.variables[$key].isOptional // false' <<<"${actual}")" == "false" ]] || failures=$((failures + 1))
+    expected_description="$(jq -r --arg service "${service_name}" --arg key "${key}" '.[$service][$key] // ""' "${template_root}/template-descriptions.json")"
+    [[ "$(jq -r --arg key "${key}" '.variables[$key].description // ""' <<<"${actual}")" == "${expected_description}" ]] || failures=$((failures + 1))
   done < <(jq -c --arg service "${service_name}" '.[$service] | to_entries[]' "${template_root}/template-defaults.json")
 done
 

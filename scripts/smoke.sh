@@ -29,7 +29,17 @@ if [[ "${PROMPTFOO_VERIFY_ONLY:-false}" == "true" ]]; then
   exit 0
 fi
 
-payload='{"config":{"description":"Railway persistence smoke","prompts":["Hello {{name}}"],"providers":["echo"],"tests":[{"vars":{"name":"Railway"}}]},"prompts":[{"raw":"Hello {{name}}","label":"Hello {{name}}","provider":"echo","metrics":{"score":1,"testPassCount":1,"testFailCount":0,"assertPassCount":1,"assertFailCount":0,"totalLatencyMs":1,"tokenUsage":{"total":0,"prompt":0,"completion":0,"cached":0}}}],"vars":["name"],"results":[{"promptIdx":0,"testIdx":0,"testCase":{"vars":{"name":"Railway"}},"prompt":{"raw":"Hello {{name}}","label":"Hello {{name}}"},"provider":{"id":"echo"},"response":{"output":"Hello Railway"},"success":true,"score":1,"latencyMs":1,"gradingResult":{"pass":true,"score":1,"reason":"Echo output matched","componentResults":[]}}],"createdAt":"2026-08-01T00:00:00.000Z"}'
-eval_id="$(api -H 'Content-Type: application/json' --data-binary "${payload}" "${promptfoo_url}/api/eval" | jq -er '.id')"
+payload='{"description":"Railway persistence smoke","prompts":["Hello {{name}}"],"providers":["echo"],"tests":[{"vars":{"name":"Railway"},"assert":[{"type":"contains","value":"Railway"}]}],"sharing":false,"evaluateOptions":{"maxConcurrency":1}}'
+job_id="$(api -H 'Content-Type: application/json' --data-binary "${payload}" "${promptfoo_url}/api/eval/job" | jq -er '.id')"
+eval_id=""
+for _ in {1..90}; do
+  job="$(api "${promptfoo_url}/api/eval/job/${job_id}")"
+  case "$(jq -r '.status' <<<"${job}")" in
+    complete) eval_id="$(jq -er '.evalId' <<<"${job}")"; break ;;
+    error) jq -r '.logs[]?' <<<"${job}" >&2; exit 1 ;;
+  esac
+  sleep 2
+done
+[[ -n "${eval_id}" ]] || { echo "Promptfoo evaluation job did not complete." >&2; exit 1; }
 api "${promptfoo_url}/api/results/${eval_id}" | jq -e '.data.results.results[0].response.output == "Hello Railway"' >/dev/null
 printf '%s\n' "${eval_id}"

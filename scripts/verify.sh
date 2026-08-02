@@ -10,9 +10,16 @@ grep -Fq "## [${version}] - 2026-08-01" "${template_root}/CHANGELOG.md"
 for file in README.md PUBLISHING.md; do grep -Fq "current template release is \`v${version}\`" "${template_root}/${file}"; done
 publish_description="$(grep -E '^  --description "' "${template_root}/PUBLISHING.md" | cut -d '"' -f 2)"
 [[ -n "${publish_description}" && ${#publish_description} -le 75 ]]
+for heading in '# Deploy and Host' '## About Hosting' '## Why Deploy' '## Common Use Cases' '## Dependencies for' '### Deployment Dependencies'; do
+  grep -Fq "${heading}" "${template_root}/MARKETPLACE.md"
+done
 
 PROMPTFOO_PASSWORD=verify-password docker compose -f "${template_root}/compose.yaml" config --quiet
 for file in template-defaults.json template-descriptions.json template-networking.json template-volumes.json; do jq empty "${template_root}/${file}"; done
+jq -e --slurpfile descriptions "${template_root}/template-descriptions.json" '
+  (keys | sort) == ($descriptions[0] | keys | sort) and
+  ([keys[] as $service | (.[$service] | keys | sort) == ($descriptions[0][$service] | keys | sort)] | all)
+' "${template_root}/template-defaults.json" >/dev/null
 for file in scripts/audit-template.sh scripts/check-standalone.sh scripts/restore-template-draft.sh scripts/smoke.sh scripts/verify.sh; do bash -n "${template_root}/${file}"; done
 
 graph="$(cd "${template_root}" && ./node_modules/.bin/railway-iac-ts .railway/railway.ts)"

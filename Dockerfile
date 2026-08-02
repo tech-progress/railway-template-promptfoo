@@ -6,4 +6,3 @@ RUN chmod 0755 /usr/local/bin/railway-entrypoint.sh
 
 ENTRYPOINT ["railway-entrypoint.sh"]
 CMD ["node", "dist/src/server/index.js"]
-

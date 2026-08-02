@@ -1,13 +1,19 @@
 {
   "Promptfoo": {
+    "PORT": "Railway listener port for the private Promptfoo service.",
+    "API_PORT": "HTTP port used by Promptfoo's self-hosted server.",
+    "HOST": "Container network binding for the Promptfoo server.",
     "PROMPTFOO_CONFIG_DIR": "Persistent directory for Promptfoo's SQLite database and configuration.",
+    "PROMPTFOO_SELF_HOSTED": "Enables Promptfoo's self-hosted server behavior.",
+    "PROMPTFOO_DISABLE_TELEMETRY": "Disables Promptfoo telemetry.",
+    "PROMPTFOO_DISABLE_UPDATE": "Disables Promptfoo update checks.",
     "PROMPTFOO_DISABLE_REMOTE_GENERATION": "Keeps generation and grading on this deployment instead of Promptfoo-hosted services.",
     "PROMPTFOO_DISABLE_SHARING": "Disables uploads to Promptfoo's hosted sharing service."
   },
   "Promptfoo Gateway": {
+    "PORT": "Railway listener port for the public Basic Auth gateway.",
     "PROMPTFOO_USERNAME": "Username required by the public Basic Auth gateway.",
     "PROMPTFOO_PASSWORD": "Generated password required by the public Basic Auth gateway.",
     "PROMPTFOO_UPSTREAM": "Private Promptfoo UI and API endpoint."
   }
 }
-
