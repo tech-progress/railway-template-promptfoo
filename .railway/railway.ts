@@ -21,6 +21,7 @@ export default defineRailway(() => {
     healthcheckTimeout: 300,
     volumeMounts: { "/home/promptfoo/.promptfoo": promptfooData },
     env: {
+      PORT: "3000",
       API_PORT: "3000",
       HOST: "0.0.0.0",
       PROMPTFOO_CONFIG_DIR: "/home/promptfoo/.promptfoo",

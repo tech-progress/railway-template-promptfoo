@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.1] - 2026-08-01
+
+- Declare Promptfoo's port explicitly for Railway platform health checks.
+
 ## [1.0.0] - 2026-08-01
 
 - Publish Promptfoo 0.117.2 behind a generated Basic Auth gateway.

@@ -1,5 +1,6 @@
 {
   "Promptfoo": {
+    "PORT": "3000",
     "API_PORT": "3000",
     "HOST": "0.0.0.0",
     "PROMPTFOO_CONFIG_DIR": "/home/promptfoo/.promptfoo",
@@ -16,4 +17,3 @@
     "PROMPTFOO_UPSTREAM": "http://${{Promptfoo.RAILWAY_PRIVATE_DOMAIN}}:3000"
   }
 }
-
