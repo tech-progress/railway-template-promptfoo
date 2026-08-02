@@ -1,0 +1,48 @@
+services:
+  promptfoo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: promptfoo-railway:local
+    environment:
+      API_PORT: "3000"
+      HOST: 0.0.0.0
+      PROMPTFOO_CONFIG_DIR: /home/promptfoo/.promptfoo
+      PROMPTFOO_SELF_HOSTED: "1"
+      PROMPTFOO_DISABLE_TELEMETRY: "1"
+      PROMPTFOO_DISABLE_UPDATE: "1"
+      PROMPTFOO_DISABLE_REMOTE_GENERATION: "true"
+      PROMPTFOO_DISABLE_SHARING: "1"
+    volumes:
+      - promptfoo-data:/home/promptfoo/.promptfoo
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r=>{if(!r.ok)process.exit(1)})"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  gateway:
+    image: caddy:2.10-alpine@sha256:4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        password_hash="$$(caddy hash-password --plaintext "$${PROMPTFOO_PASSWORD}")"
+        printf ':8080 {\n handle /healthz {\n  respond "ok" 200\n }\n handle {\n  basic_auth {\n   %s %s\n  }\n  reverse_proxy %s\n }\n}\n' "$${PROMPTFOO_USERNAME}" "$${password_hash}" "$${PROMPTFOO_UPSTREAM}" >/tmp/Caddyfile
+        exec caddy run --config /tmp/Caddyfile --adapter caddyfile
+    environment:
+      PROMPTFOO_USERNAME: ${PROMPTFOO_USERNAME:-promptfoo}
+      PROMPTFOO_PASSWORD: ${PROMPTFOO_PASSWORD:?Set PROMPTFOO_PASSWORD}
+      PROMPTFOO_UPSTREAM: http://promptfoo:3000
+    ports:
+      - "8380:8080"
+    depends_on:
+      promptfoo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--spider", "http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  promptfoo-data:

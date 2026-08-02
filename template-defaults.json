@@ -1,0 +1,19 @@
+{
+  "Promptfoo": {
+    "API_PORT": "3000",
+    "HOST": "0.0.0.0",
+    "PROMPTFOO_CONFIG_DIR": "/home/promptfoo/.promptfoo",
+    "PROMPTFOO_SELF_HOSTED": "1",
+    "PROMPTFOO_DISABLE_TELEMETRY": "1",
+    "PROMPTFOO_DISABLE_UPDATE": "1",
+    "PROMPTFOO_DISABLE_REMOTE_GENERATION": "true",
+    "PROMPTFOO_DISABLE_SHARING": "1"
+  },
+  "Promptfoo Gateway": {
+    "PORT": "8080",
+    "PROMPTFOO_USERNAME": "promptfoo",
+    "PROMPTFOO_PASSWORD": "${{secret(32)}}",
+    "PROMPTFOO_UPSTREAM": "http://${{Promptfoo.RAILWAY_PRIVATE_DOMAIN}}:3000"
+  }
+}
+

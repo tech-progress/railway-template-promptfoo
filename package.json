@@ -1,0 +1,9 @@
+{
+  "name": "railway-promptfoo-evaluation-template",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "railway": "3.6.0"
+  }
+}
+
