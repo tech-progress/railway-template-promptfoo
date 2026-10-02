@@ -6,7 +6,7 @@ required=(.dockerignore .env.example .gitignore .railway/railway.ts CHANGELOG.md
 for file in "${required[@]}"; do test -f "${template_root}/${file}" || { echo "Missing ${file}" >&2; exit 1; }; done
 
 version="$(<"${template_root}/VERSION")"; [[ "${version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
-grep -Fq "## [${version}] - 2026-08-01" "${template_root}/CHANGELOG.md"
+grep -Eq "^## \[${version//./\\.}\] - [0-9]{4}-[0-9]{2}-[0-9]{2}$" "${template_root}/CHANGELOG.md"
 for file in README.md PUBLISHING.md; do grep -Fq "current template release is \`v${version}\`" "${template_root}/${file}"; done
 publish_description="$(grep -E '^  --description "' "${template_root}/PUBLISHING.md" | cut -d '"' -f 2)"
 [[ -n "${publish_description}" && ${#publish_description} -le 75 ]]
@@ -36,7 +36,12 @@ jq -e '
   ([.[] | select(.name=="Promptfoo Gateway")][0].deploy.healthcheckPath == "/healthz")
 ' <<<"${graph}" >/dev/null
 
-for pin in bb92a778d0c1bee8cdb55a27af111dc4f23b4b53a3d535d7b3b6a43a71d3d9c7 4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d; do
+grep -Fq 'FROM ghcr.io/promptfoo/promptfoo:0.123.1@sha256:' "${template_root}/Dockerfile"
+grep -Fq 'CMD ["node", "dist/src/server/index.js"]' "${template_root}/Dockerfile"
+for file in compose.yaml .railway/railway.ts; do
+  grep -Fq 'caddy:2.10.2-alpine@sha256:4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d' "${template_root}/${file}"
+done
+for pin in 2dfddde000886e9a0bcce799478095a2e7d1e4438a6c6669ac04001e8ae29b85 4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d; do
   grep -Rqs "${pin}" "${template_root}/compose.yaml" "${template_root}/Dockerfile" "${template_root}/.railway/railway.ts"
 done
 grep -Fq "su -s /bin/sh promptfoo" "${template_root}/railway-entrypoint.sh"

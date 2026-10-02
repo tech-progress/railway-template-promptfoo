@@ -5,7 +5,7 @@ const PROMPTFOO_SOURCE = github("tech-progress/railway-template-promptfoo", {
   rootDirectory: "/",
 });
 const CADDY_IMAGE =
-  "caddy:2.10-alpine@sha256:4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d";
+  "caddy:2.10.2-alpine@sha256:4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d";
 
 export default defineRailway(() => {
   const promptfooData = volume("Promptfoo Data", { sizeMB: 5_000 });

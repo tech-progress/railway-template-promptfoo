@@ -1,10 +1,14 @@
 # Promptfoo evaluation on Railway
 
-This template deploys Promptfoo's community self-hosted UI and API behind Caddy Basic Auth. Promptfoo stays private, stores its SQLite database and configuration on a 5 GB volume, and disables telemetry, update checks, remote generation, and hosted sharing by default.
+This template deploys Promptfoo's community self-hosted UI and API behind Caddy Basic Auth. Promptfoo stays private, stores its SQLite database, configuration, and filesystem blobs on a 5 GB volume, and disables telemetry, update checks, remote generation, and hosted sharing by default.
 
 Upstream project: [Promptfoo](https://promptfoo.dev).
 
-The current template release is `v1.0.2` and pins Promptfoo `0.117.2` plus Caddy `2.10` by immutable multi-architecture digests. Railway builds the small volume-permission wrapper from `tech-progress/railway-template-promptfoo` on `release-v1`; it drops back to Promptfoo's UID before starting the upstream server.
+The current template release is `v1.0.3` and pins Promptfoo `0.123.1` plus Caddy `2.10.2` by immutable multi-architecture digests. The Caddy digest is unchanged; its patch tag now identifies the already-pinned artifact explicitly. Railway builds the small volume-permission wrapper from `tech-progress/railway-template-promptfoo` on `release-v1`; it drops back to Promptfoo's UID before starting the upstream server.
+
+This maintenance candidate is prepared locally, not yet published. Promptfoo now uses ESM, filesystem blob storage, and a libsql SQLite driver; its upstream image supplies the supported Node runtime. Read [UPGRADE.md](UPGRADE.md) before upgrading existing data or custom JavaScript providers/assertions.
+
+Local checks on 2026-10-02 passed: template verifier, Docker build, clean root-owned volume startup with a non-root Node server, Basic Auth rejection/authenticated echo evaluation, same-version evaluation persistence after restart, and an ESM custom provider with a JavaScript assertion. The image reports Promptfoo `0.123.1` and Node `24.21.0`; the gateway reports Caddy `2.10.2`. Registry index digests were checked with `docker buildx imagetools inspect` using temporary tooling. Existing 0.117.2-volume migration, blob/media round trips, arbitrary custom extensions, and Railway deployment/publication were not validated.
 
 ## Use on Railway
 

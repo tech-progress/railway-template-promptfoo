@@ -20,6 +20,6 @@ Railway supplies private networking, a persistent 5 GB volume, generated gateway
 
 ### Deployment Dependencies
 
-The template includes Promptfoo `0.117.2`, Caddy `2.10`, and a 5 GB persistent volume. Add provider API keys to the private `Promptfoo` service when required.
+The template includes Promptfoo `0.123.1`, Caddy `2.10.2`, and a 5 GB persistent volume for SQLite, configuration, and filesystem blobs. Add provider API keys to the private `Promptfoo` service when required.
 
 After deployment, open `Promptfoo Gateway` and use its generated username and password. The community server uses SQLite, supports one replica, has in-memory jobs, and does not include built-in SSO or supported scheduling, so this template is intended for individual and experimental deployments.

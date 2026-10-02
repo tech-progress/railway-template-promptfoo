@@ -1,4 +1,4 @@
-FROM ghcr.io/promptfoo/promptfoo:0.117.2@sha256:bb92a778d0c1bee8cdb55a27af111dc4f23b4b53a3d535d7b3b6a43a71d3d9c7
+FROM ghcr.io/promptfoo/promptfoo:0.123.1@sha256:2dfddde000886e9a0bcce799478095a2e7d1e4438a6c6669ac04001e8ae29b85
 
 USER root
 COPY railway-entrypoint.sh /usr/local/bin/railway-entrypoint.sh
